@@ -1,0 +1,22 @@
+{% extends 'timetracker/master_layout.html' %}
+
+{%  block pagetitle  %} Settings {% endblock %}
+
+{% block body %}
+<div id="wrapper">
+    <header>
+    </header>
+    <nav>
+    </nav>
+    <section id="content">
+        <div class="col-md-10 col-md-offset-1">
+            Hi {{ request.user.username }}!<br>
+            These are your settings.
+        </div>
+    </section>
+    <aside>
+    </aside>
+    <footer>
+    </footer>
+</div>
+{% endblock %}

@@ -17,6 +17,9 @@ urlpatterns = [
     url('^reset/done/$', auth_views.password_reset_complete, name='user_password_reset_complete'),
 
     url(r'^$', views.index, name='index'),
-
-
+    url(r'^tasks/?$', views.tasks, name='tasks'),
+    url(r'^task/(?P<slug>\S+)/?$', views.task, name='task'),
+    url(r'^spans/?$', views.spans, name='spans'),
+    url(r'^span/(?P<span_id>\d+)/?$', views.span, name='span'),
+    url(r'^settings/?$', views.settings, name='settings'),
 ]
