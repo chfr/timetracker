@@ -11,7 +11,13 @@
     <section id="content">
         <div class="col-md-10 col-md-offset-1">
             Hi {{ request.user.username }}!<br>
-            These are all your spans.
+            <ul>
+                {% for span in spans %}
+                    <li>{{ span }}</li>
+                {% empty %}
+                    <li>No spans</li>
+                {% endfor %}
+            </ul>
         </div>
     </section>
     <aside>

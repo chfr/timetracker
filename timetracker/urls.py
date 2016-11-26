@@ -22,4 +22,7 @@ urlpatterns = [
     url(r'^spans/?$', views.spans, name='spans'),
     url(r'^span/(?P<span_id>\d+)/?$', views.span, name='span'),
     url(r'^settings/?$', views.settings, name='settings'),
+
+    url(r'^start/(?P<token>\S+)/(?P<slug>\S+)?$', views.start, name='start'),
+    url(r'^end/(?P<token>\S+)/(?P<slug>\S+)?$', views.end, name='end'),
 ]

@@ -11,7 +11,13 @@
     <section id="content">
         <div class="col-md-10 col-md-offset-1">
             Hi {{ request.user.username }}!<br>
-            These are all your tasks.
+            <ul>
+            {% for task in tasks %}
+                <li>{{ task }}</li>
+            {% empty %}
+                <li>No tasks</li>
+            {% endfor %}
+            </ul>
         </div>
     </section>
     <aside>
