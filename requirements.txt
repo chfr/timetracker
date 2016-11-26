@@ -1,3 +1,4 @@
 Django==1.10.3
+django-autoslug==1.9.3
 django-colorful==1.2
 wheel==0.24.0
