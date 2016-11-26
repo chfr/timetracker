@@ -7,9 +7,42 @@ from django.utils import timezone
 from .models import UserData, Span, Task
 
 
+class TableCell:
+    def __init__(self):
+        self._spans = set()
+
+    @property
+    def spans(self):
+        return self._spans
+
+    def add_span(self, span):
+        self._spans.add(span)
+
+    def has_span(self, span):
+        return span in self._spans
+
 @login_required
 def index(request):
-    context = {}
+    tasks = Task.objects.filter(user=request.user)
+
+    # 24*7 matrix where each cell represents one hour in a week
+    # table[15][0] is the hour between 15:00 and 16:00 on Monday
+    table = [[None] * 7 for _ in range(24)]
+
+    for task in tasks:
+        spans = Span.objects.filter(task=task)
+        for span in spans:
+            if span.has_ended():
+                dow = span.start.weekday()
+                start_hour = span.start.hour
+                end_hour = span.end.hour
+
+                for i in range(end_hour - start_hour + 1):
+                    if not table[start_hour + i][dow]:
+                        table[start_hour + i][dow] = TableCell()
+                    table[start_hour + i][dow].add_span(span)
+
+    context = {"table": table, "hours": range(24), "days": range(7)}
     return render(request, "timetracker/index.html", context)
 
 

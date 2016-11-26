@@ -10,7 +10,39 @@
     </nav>
     <section id="content">
         <div class="col-md-10 col-md-offset-1">
-            Hi {{ request.user.username }}!<br>
+            <table class="table table-bordered table-condensed table-hover table-striped">
+                <tr>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1">Monday</th>
+                    <th class="col-md-1">Tuesday</th>
+                    <th class="col-md-1">Wednesday</th>
+                    <th class="col-md-1">Thursday</th>
+                    <th class="col-md-1">Friday</th>
+                    <th class="col-md-1">Saturday</th>
+                    <th class="col-md-1">Sunday</th>
+                </tr>
+
+                {% for day_list in table %}
+                <tr>
+                    <td>{{ forloop.counter0|stringformat:"02d" }}</td>
+                    {% for cell in day_list %}
+                        {% if cell %}
+                            <td style="padding: 0px; height: 30px;">
+                                <div>
+                            {% for span in cell.spans %}
+                                    <div style="margin-left: 5%; height: 100%; width: 90%; background-color: {{ span.task.color }};">
+                                        <span style="padding: 5px;">{{ span.task.name }}</span>
+                                    </div>
+                            {% endfor %}
+                                </div>
+                            </td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
         </div>
     </section>
     <aside>

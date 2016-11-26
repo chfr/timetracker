@@ -37,5 +37,19 @@ class Span(models.Model):
     start = models.DateTimeField(blank=False, null=False, default=timezone.now)
     end = models.DateTimeField(null=True)
 
+    def has_ended(self):
+        return self.end is not None
+
+    @property
+    def duration(self):
+        if self.start is None or self.end is None:
+            return 0
+
+        duration_delta = self.end - self.start
+        seconds = duration_delta.total_seconds()
+        minutes = seconds / 60  # yes, fractional minutes are lost here
+
+        return minutes
+
     def __str__(self):
         return "{} from {} to {}".format(self.task.name, self.start, self.end)
