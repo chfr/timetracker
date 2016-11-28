@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+try:
+    import utgifter_proj.config as config
+except ImportError as e:
+    print("Could not import config file, using default settings")
+    config = None
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,10 +25,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'kpuqm#p(*)@n3meis=+f1t!8)i@*%d++ujsrv68swd8rj6j)*y'
+# But do go ahead and steal the key used in development!
+SECRET_KEY = 'e#@=*)w-4rq9%7er6zx$b4e4s*5f39vymxui2%f*l3exf_i1zi'
+if config and hasattr(config, "SECRET_KEY"):
+    SECRET_KEY = config.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+if config and hasattr(config, "DEBUG"):
+    DEBUG = config.DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -75,13 +85,15 @@ WSGI_APPLICATION = 'timetracker_proj.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if config and hasattr(config, "DATABASES"):
+    DATABASES = config.DATABASES
+else:  # this will be true on dev machines
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
 
 
 # Password validation
