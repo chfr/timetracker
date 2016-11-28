@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 try:
-    import utgifter_proj.config as config
+    import timetracker_proj.config as config
 except ImportError as e:
     print("Could not import config file, using default settings")
     config = None
