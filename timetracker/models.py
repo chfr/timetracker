@@ -40,16 +40,22 @@ class Span(models.Model):
     def has_ended(self):
         return self.end is not None
 
-    @property
-    def duration(self):
+    def duration_minutes(self):
         if self.start is None or self.end is None:
             return 0
 
         duration_delta = self.end - self.start
-        seconds = duration_delta.total_seconds()
-        minutes = seconds / 60  # yes, fractional minutes are lost here
+        seconds = int(duration_delta.total_seconds())
+        minutes = seconds // 60  # yes, fractional minutes are lost here
 
         return minutes
+
+    def duration_hours_minutes(self):
+        minutes = self.duration_minutes()
+        hours = minutes // 60
+        minutes = minutes % 60
+
+        return "{}:{:2d}".format(hours, minutes)
 
     def __str__(self):
         return "{} from {} to {}".format(self.task.name, self.start, self.end)
