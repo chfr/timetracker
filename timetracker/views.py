@@ -1,3 +1,6 @@
+import datetime
+from argparse import _AppendAction
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
@@ -9,14 +12,16 @@ from .models import UserData, Span, Task
 
 class TableCell:
     def __init__(self):
-        self._spans = set()
+        self._spans = []
+        self._firsts = {}
+        self._lasts = {}
 
     @property
     def spans(self):
         return self._spans
 
-    def add_span(self, span):
-        self._spans.add(span)
+    def add_span(self, index, span):
+        self._spans.append((index, span))
 
     def has_span(self, span):
         return span in self._spans
@@ -29,18 +34,36 @@ def index(request):
     # table[15][0] is the hour between 15:00 and 16:00 on Monday
     table = [[None] * 7 for _ in range(24)]
 
+    tz = timezone.get_default_timezone()
+    dt = datetime.datetime.utcnow()
+
+    delta = tz.utcoffset(dt)
+    offset_hours = int(abs(delta.total_seconds())) // 3600  # dirty!
+
+
     for task in tasks:
         spans = Span.objects.filter(task=task)
         for span in spans:
             if span.has_ended():
                 dow = span.start.weekday()
-                start_hour = span.start.hour
-                end_hour = span.end.hour
+                start_hour = span.start.hour + offset_hours
+                end_hour = span.end.hour + offset_hours  # breaks when it crosses a day boundary
+
+                if not table[start_hour][dow]:
+                    table[start_hour][dow] = TableCell()
 
                 for i in range(end_hour - start_hour + 1):
-                    if not table[start_hour + i][dow]:
-                        table[start_hour + i][dow] = TableCell()
-                    table[start_hour + i][dow].add_span(span)
+                    hour = start_hour + i
+                    if hour > 23:
+                        hour = 0
+                        dow = (dow + 1) % 7
+
+                    if not table[hour][dow]:
+                        table[hour][dow] = TableCell()
+                    if i == end_hour - start_hour:
+                        table[hour][dow].add_span(-1, span)
+                    else:
+                        table[hour][dow].add_span(i, span)
 
     context = {"table": table, "hours": range(24), "days": range(7)}
     return render(request, "timetracker/index.html", context)

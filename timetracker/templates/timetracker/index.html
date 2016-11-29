@@ -29,11 +29,20 @@
                         {% if cell %}
                             <td style="padding: 0px; height: 30px;">
                                 <div>
-                            {% for span in cell.spans %}
+                                {% for index, span in cell.spans %}
                                     <div style="margin-left: 5%; height: 100%; width: 90%; background-color: {{ span.task.color }};">
-                                        <span style="padding: 5px;">{{ span.task.name }}</span>
+                                        {% if index == 0 %}
+                                            <span style="padding: 5px;">
+                                                {{ span.start|date:"H:i" }}
+                                                {{ span.task.name }}
+                                            </span>
+                                        {% elif index == -1 %}
+                                            <span style="padding: 5px;">{{ span.end|date:"H:i" }} ({{ span.duration_hours_minutes }})</span>
+                                        {% else %}
+                                            <span style="padding: 5px;"></span>
+                                        {% endif %}
                                     </div>
-                            {% endfor %}
+                                {% endfor %}
                                 </div>
                             </td>
                         {% else %}
