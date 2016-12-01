@@ -45,18 +45,24 @@ def index(request):
         spans = Span.objects.filter(task=task)
         for span in spans:
             if span.has_ended():
-                dow = span.start.weekday()
+                dow = span.start.weekday()  # day of week
                 start_hour = span.start.hour + offset_hours
-                end_hour = span.end.hour + offset_hours  # breaks when it crosses a day boundary
+                end_hour = span.end.hour + offset_hours
+
+                end_dow = span.end.weekday()
+                day_diff = end_dow - dow
+                end_hour += day_diff * 24
 
                 if not table[start_hour][dow]:
                     table[start_hour][dow] = TableCell()
 
+                hour = start_hour
+
                 for i in range(end_hour - start_hour + 1):
-                    hour = start_hour + i
+
                     if hour > 23:
                         hour = 0
-                        dow = (dow + 1) % 7
+                        dow = (dow + 1) % 7  # if this crosses a week boundary there will be blood
 
                     if not table[hour][dow]:
                         table[hour][dow] = TableCell()
@@ -64,6 +70,8 @@ def index(request):
                         table[hour][dow].add_span(-1, span)
                     else:
                         table[hour][dow].add_span(i, span)
+
+                    hour += 1
 
     context = {"table": table, "hours": range(24), "days": range(7)}
     return render(request, "timetracker/index.html", context)
